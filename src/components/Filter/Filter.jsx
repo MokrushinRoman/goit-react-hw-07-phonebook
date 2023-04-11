@@ -1,18 +1,18 @@
-import PropTypes from 'prop-types';
-
+import { useDispatch } from 'react-redux';
 import { Label } from './Filter.styled';
 import { capitalLetter } from 'helpers';
+import { setFilterValue } from 'redux/filterSlice';
 
-export const Filter = ({ value, onChange }) => {
-    return (
-        <Label>
-            {capitalLetter('find contact by name')}
-            <input type="text" value={value} onChange={onChange} />
-        </Label>
-    );
-};
+export const Filter = () => {
+  const dispatch = useDispatch();
 
-Filter.propTypes = {
-    value: PropTypes.string.isRequired,
-    onChange: PropTypes.func.isRequired,
+  return (
+    <Label>
+      {capitalLetter('find contact by name')}
+      <input
+        type="text"
+        onChange={e => dispatch(setFilterValue(e.target.value))}
+      />
+    </Label>
+  );
 };

@@ -1,56 +1,15 @@
-import { useState, useEffect, useMemo } from 'react';
-import { nanoid } from 'nanoid';
+import { useDispatch } from 'react-redux';
 import { Box } from '../Box';
 import { Title, Contacts, Phonebook, Filter } from 'components';
-
-const initialContacts = [
-  { id: 'id-1', name: 'Hermione qwe', number: '443-89-22' },
-  { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-  { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-  { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-];
-
-const useLocalStorage = (key, defaultValue) => {
-  const [state, setState] = useState(
-    () => JSON.parse(localStorage.getItem(key)) ?? defaultValue
-  );
-
-  useEffect(() => {
-    localStorage.setItem(key, JSON.stringify(state));
-  }, [key, state]);
-
-  return [state, setState];
-};
+import { useEffect } from 'react';
+import { fetchContacts } from 'redux/operations';
 
 export const App = () => {
-  const [contacts, setContacts] = useLocalStorage('contacts', initialContacts);
-  const [filter, setFilter] = useState('');
+  const dispatch = useDispatch();
 
-  const addContact = (name, number) => {
-    const newContact = {
-      id: nanoid(),
-      name,
-      number,
-    };
-
-    setContacts(contacts => [newContact, ...contacts]);
-  };
-
-  const onFilterChange = e => {
-    setFilter(e.currentTarget.value);
-  };
-
-  const handleFilterContacts = useMemo(() => {
-    const normalizedFilter = filter.toLowerCase();
-
-    return contacts.filter(({ name }) =>
-      name.toLowerCase().includes(normalizedFilter)
-    );
-  }, [contacts, filter]);
-
-  const onDeleteContact = contactId => {
-    setContacts(contacts => contacts.filter(({ id }) => id !== contactId));
-  };
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
 
   return (
     <Box
@@ -67,18 +26,15 @@ export const App = () => {
       <Box>
         <Title text="phonebook" />
 
-        <Phonebook existedContacts={contacts} addContact={addContact} />
+        <Phonebook />
       </Box>
 
       <Box mt={3}>
         <Title text="contacts" />
 
-        <Filter onChange={onFilterChange} value={filter} />
+        <Filter />
 
-        <Contacts
-          contacts={handleFilterContacts}
-          deleteContact={onDeleteContact}
-        />
+        <Contacts />
       </Box>
     </Box>
   );

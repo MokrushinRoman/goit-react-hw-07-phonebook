@@ -1,9 +1,8 @@
 import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectContactsList } from 'redux/seloctors';
 import { BiXCircle } from 'react-icons/bi';
-import PropTypes from 'prop-types';
-
 import { errorNotification } from 'helpers';
-
 import {
   PhonebookForm,
   Label,
@@ -12,10 +11,13 @@ import {
   CloseButton,
 } from './Phonebook.styled';
 import { Box } from 'components/Box';
+import { addContact } from 'redux/operations';
 
-export const Phonebook = ({ addContact, existedContacts }) => {
+export const Phonebook = () => {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
+  const dispatch = useDispatch();
+  const contacts = useSelector(selectContactsList);
 
   const onInputChange = e => {
     const { name, value } = e.currentTarget;
@@ -26,16 +28,13 @@ export const Phonebook = ({ addContact, existedContacts }) => {
       case 'number':
         setNumber(value);
         break;
-
       default:
         return new Error("Such field wasn't found ");
     }
-    // setState({ [name]: value });
   };
 
   const onClearInput = e => {
     const { name } = e.currentTarget;
-
     switch (name) {
       case 'name':
         setName('');
@@ -43,11 +42,9 @@ export const Phonebook = ({ addContact, existedContacts }) => {
       case 'number':
         setNumber('');
         break;
-
       default:
         return new Error("Such field wasn't found ");
     }
-    // setState({ [name]: '' });
   };
 
   const onSubmit = e => {
@@ -56,21 +53,22 @@ export const Phonebook = ({ addContact, existedContacts }) => {
     if (dublicateFinder(name)) {
       errorNotification(name);
     } else {
-      addContact(name, number);
+      const contact = { name, phone: number };
+      dispatch(addContact(contact));
       formReset();
     }
   };
 
-  const dublicateFinder = newName => {
-    return existedContacts.some(
-      ({ name }) => name.toLowerCase() === newName.toLowerCase()
+  const dublicateFinder = name => {
+    const normalizedName = name.toLowerCase().trim();
+    return contacts.some(
+      ({ name }) => name.toLowerCase() === normalizedName.toLowerCase()
     );
   };
 
   const formReset = () => {
     setName('');
     setNumber('');
-    // this.setState({ name: '', number: '' });
   };
 
   return (
@@ -116,15 +114,4 @@ export const Phonebook = ({ addContact, existedContacts }) => {
       <AddContactButton type="submit">Add contacts</AddContactButton>
     </PhonebookForm>
   );
-};
-
-Phonebook.propTypes = {
-  existedContacts: PropTypes.arrayOf(
-    PropTypes.exact({
-      id: PropTypes.string,
-      name: PropTypes.string,
-      number: PropTypes.string,
-    }).isRequired
-  ).isRequired,
-  addContact: PropTypes.func.isRequired,
 };
