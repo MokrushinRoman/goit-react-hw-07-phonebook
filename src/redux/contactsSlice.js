@@ -30,7 +30,7 @@ const contactsSlice = createSlice({
       .addCase(deleteContact.rejected, handleRejectedOperation)
       .addCase(deleteContact.fulfilled, (state, { payload }) => {
         state.isLoading = false;
-        state.items = state.items.filter(({ id }) => id !== payload);
+        state.items = state.items.filter(({ id }) => id !== payload.id);
       })
       .addCase(addContact.pending, handleOperationPending)
       .addCase(addContact.rejected, handleRejectedOperation)

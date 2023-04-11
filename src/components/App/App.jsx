@@ -1,4 +1,4 @@
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Box } from '../Box';
 import { Title, Contacts, Phonebook, Filter } from 'components';
 import { useEffect } from 'react';
